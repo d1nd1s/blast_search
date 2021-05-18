@@ -1,0 +1,47 @@
+{% extends "bootstrap/base.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}BLAST{% endblock %}
+
+{#{% block navbar %}#}
+{#<div class="navbar navbar-fixed-top">#}
+{#    This is still a navbar#}
+{#</div>#}
+{#{% endblock %}#}
+
+{% block content %}
+    <form class="form form-horizontal" method="post" role="form">
+        <div class="container">
+            <h1>BLAST</h1>
+            <div class="row">
+                <div class="col-sm-6">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, hiddens="only") }}
+{#                      {{ wtf.form_field(form.name) }}#}
+{#                      {{ wtf.form_field(form.email) }}#}
+                    {{ wtf.form_field(form.sequence)}}
+                    {{ wtf.form_field(form.file)}}
+                    {{ wtf.form_field(form.job_title)}}
+    {#                  {{ wtf.form_field(form.special_check) }}#}
+                </div>
+                <div class="col col-sm-6 col-md-offset-0.7">
+    {#                    <form class="form form-horizontal" method="post" role="form">#}
+                    {{ wtf.form_field(form.query_from) }}
+                    {{ wtf.form_field(form.query_to) }}
+                    {{ wtf.form_field(form.search_db) }}
+                </div>
+            </div>
+        </div>
+        <div class="container">
+            <p>
+                <a class="btn btn-primary" data-toggle="collapse" href="#multiCollapseExample1" role="button" aria-expanded="false" aria-controls="multiCollapseExample1">Параметры BLAST</a>
+            </p>
+            <div class="collapse multi-collapse" id="multiCollapseExample1">
+                <div class="card card-body">
+                    {{ wtf.form_field(form.max_target_sequences) }}
+                    {{ wtf.form_field(form.short_query) }}
+                </div>
+            </div>
+            {{ wtf.form_field(form.submit, button_map={'submit':'success'}) }}
+        </div>
+    </form>
+{% endblock %}

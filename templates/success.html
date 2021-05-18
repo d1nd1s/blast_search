@@ -1,0 +1,19 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Hello world{% endblock %}
+
+{#{% block navbar %}#}
+{#<div class="navbar navbar-fixed-top">#}
+{#    This also still a navbar#}
+{#</div>#}
+{#{% endblock %}#}
+
+{% block content %}
+<div class="container">
+    <h1>Success page</h1>
+    <h3>search_db {% if max_target_sequences %}{{ max_target_sequences }}{% else %}unknown{% endif %}!</h3>
+    {{ result }}
+    {{ result2 }}
+    {{ result3 }}
+    {{ res }}
+</div>
+{% endblock %}
