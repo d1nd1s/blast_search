@@ -1,15 +1,18 @@
 {% extends "bootstrap/base.html" %}
-{% block title %}BLAST{% endblock %}
-
-{#{% block navbar %}#}
-{#<div class="navbar navbar-fixed-top">#}
-{#  Navbar#}
-{#</div>#}
-{#{% endblock %}#}
+{% import "bootstrap/wtf.html" as wtf %}
+{% block title %}BLAST Search{% endblock %}
 
 {% block content %}
-<div class="container">
-  <h1>Press to start BLASTN</h1>
-  <a href="/login">Start</a>
-</div>
+    <form class="form" method="post" role="form">
+        <div class="container">
+            <h1>BLAST search</h1>
+            {{ form.hidden_tag() }}
+            {{ wtf.form_errors(form, hiddens="only") }}
+            {{ wtf.form_field(form.sequence)}}
+            {{ wtf.form_field(form.search_db) }}
+            {{ wtf.form_field(form.max_target_sequences) }}
+            {{ wtf.form_field(form.short_query) }}
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
 {% endblock %}
