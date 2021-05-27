@@ -1,17 +1,15 @@
 ﻿import os
 
-from scrapy.selector import Selector
-
-# os.chdir('/home/dina/PycharmProjects/blast_search')
-import subprocess
-
-from flask import Flask, render_template, redirect, session, url_for, flash, request, send_from_directory
+# from scrapy.selector import Selector
+from parsel import Selector
+from flask import Flask, render_template
+# from flask import redirect, session, url_for, flash, request, send_from_directory
 from flask_bootstrap import Bootstrap
-from werkzeug.utils import secure_filename
+# from werkzeug.utils import secure_filename
 
 import subprocess
 
-import xml.etree.ElementTree as ET
+# import xml.etree.ElementTree as ET
 from forms import SearchForm
 
 app = Flask(__name__)
@@ -27,7 +25,8 @@ Bootstrap(app)
 def index():
     form = SearchForm()
     if form.validate_on_submit():
-        cmd = ['blastn', '-db',  'db/'+form.data['search_db'], '-outfmt',  '5', '-max_target_seqs', str(form.data['max_target_sequences'])]
+        cmd = ['blastn', '-db',  'db/'+form.data['search_db'], '-outfmt',  '5', '-max_target_seqs',
+               str(form.data['max_target_sequences'])]
         # input_bytes = form.data['sequence'].decode('utf8')
         sp_run = subprocess.run(cmd,
                                 input=form.data['sequence'],
@@ -38,11 +37,17 @@ def index():
             text=sp_run.stdout,
             type='xml')
 
-        dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
+        xml_dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
         # s = {(k, v) for (k, v) in dict.items() if v}
-        return render_template('result.html', data={'query': form.data['sequence'], 'result': dict, 'db': form.data['search_db'],
-                                                    'program': dict['BlastOutput_program'], 'query_id': dict['BlastOutput_query-ID'],
-                                                    'results': [{'a': 1, 'b': 2, 'id':'aasdasd'}, {'a':3, 'b':4, 'id':'sdfsdf'}]
+        return render_template('result.html', data={'query': form.data['sequence'],
+                                                    'result': xml_dict,
+                                                    'db': form.data['search_db'],
+                                                    'program': xml_dict['BlastOutput_program'],
+                                                    'query_id': xml_dict['BlastOutput_query-ID'],
+                                                    'results': [
+                                                        {'a': 1, 'b': 2, 'id': 'aasdasd'},
+                                                        {'a': 3, 'b': 4, 'id': 'sdfsdf'}
+                                                    ]
                                                     })
     return render_template('index.html', form=form)
 
@@ -85,6 +90,7 @@ def index():
 #         session['short_query'] = form.short_query.data
 #         return redirect(url_for('success'))
 #     return render_template('login.html', form=form)
+
 
 if __name__ == '__main__':
     app.run()
