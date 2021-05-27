@@ -1,4 +1,8 @@
 ﻿import os
+
+from scrapy.selector import Selector
+
+# os.chdir('/home/dina/PycharmProjects/blast_search')
 import subprocess
 
 from flask import Flask, render_template, redirect, session, url_for, flash, request, send_from_directory
@@ -7,6 +11,7 @@ from werkzeug.utils import secure_filename
 
 import subprocess
 
+import xml.etree.ElementTree as ET
 from forms import SearchForm
 
 app = Flask(__name__)
@@ -18,22 +23,32 @@ Bootstrap(app)
 # ALLOWED_EXTENSIONS = {'txt', 'fa', 'fasta'}
 # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-
-
 @app.route('/', methods=["GET", "POST"])
 def index():
-  form = SearchForm()
-  if form.validate_on_submit():
-    cmd = ['blastn', '-db',  'db/'+form.data['search_db'], '-outfmt',  '0', '-max_target_seqs', str(form.data['max_target_sequences'])]
-    result = subprocess.run(cmd, input=form.data['sequence'].encode('utf8'), capture_output=True)
-    return render_template('result.html', data={'query': form.data['sequence'], 'result': result.stdout.decode('utf8'), 'db': form.data['search_db']})
-  return render_template('index.html', form=form)
+    form = SearchForm()
+    if form.validate_on_submit():
+        cmd = ['blastn', '-db',  'db/'+form.data['search_db'], '-outfmt',  '5', '-max_target_seqs', str(form.data['max_target_sequences'])]
+        # input_bytes = form.data['sequence'].decode('utf8')
+        sp_run = subprocess.run(cmd,
+                                input=form.data['sequence'],
+                                capture_output=True,
+                                encoding='utf-8')
+
+        result = Selector(
+            text=sp_run.stdout,
+            type='xml')
+
+        dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
+        # s = {(k, v) for (k, v) in dict.items() if v}
+        return render_template('result.html', data={'query': form.data['sequence'], 'result': dict, 'db': form.data['search_db'],
+                                                    'program': dict['BlastOutput_program'], 'query_id': dict['BlastOutput_query-ID'],
+                                                    'results': [{'a': 1, 'b': 2, 'id':'aasdasd'}, {'a':3, 'b':4, 'id':'sdfsdf'}]
+                                                    })
+    return render_template('index.html', form=form)
 
 # def allowed_file(filename):
 #     return '.' in filename and \
 #            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
 # @app.route('/login', methods=["GET", "POST"])
 # def login():
 #     form = MyForm()

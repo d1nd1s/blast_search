@@ -6,8 +6,44 @@
     <h1>Search result</h1>
     <div>Database: <strong>{{ data.db }}</strong></div>
     <div>Query: <strong>{{ data.query }}</strong></div>
+    <div>Program: <strong>{{ data.program }}</strong></div>
+    <div>Query ID: <strong>{{ data.query_id }}</strong></div>
     <a href="{{ url_for('index') }}">Back</a>
     <h3>Search result</h3>
+{#    <a href="{{ url_for('blast_res') }}">Info</a>#}
     <pre>{{ data.result }}</pre>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Описание</th>
+          <th scope="col">Научное название</th>
+{#          <th scope="col">Ссылка</th>#}
+        </tr>
+      </thead>
+      <tbody>
+      {% for r in data['results'] %}
+        <tr>
+            <td><a href="/detail/{{ r['id'] }}">{{ r['a'] }}</a></td>
+            <td>{{ r['b'] }}</td>
+        </tr>
+      {% endfor %}
+{#        <tr>#}
+{#          <td>Mark</td>#}
+{#          <td>Otto</td>#}
+{#          <td>@mdo</td>#}
+{#        </tr>#}
+{#        <tr>#}
+{#          <td>Jacob</td>#}
+{#          <td>Thornton</td>#}
+{#          <td>@fat</td>#}
+{#        </tr>#}
+{#        <tr>#}
+{#          <th scope="row">3</th>#}
+{#          <td colspan="2">Larry the Bird</td>#}
+{#          <td>@twitter</td>#}
+{#        </tr>#}
+      </tbody>
+    </table>
 </div>
 {% endblock %}
+
