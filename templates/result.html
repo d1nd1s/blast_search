@@ -8,42 +8,61 @@
     <div>Query: <strong>{{ data.query }}</strong></div>
     <div>Program: <strong>{{ data.program }}</strong></div>
     <div>Query ID: <strong>{{ data.query_id }}</strong></div>
+    <div>Job Title: <strong>{{ data.job_title }}</strong></div>
+
     <a href="{{ url_for('index') }}">Back</a>
     <h3>Search result</h3>
 {#    <a href="{{ url_for('blast_res') }}">Info</a>#}
     <pre>{{ data.result }}</pre>
-    <table class="table">
+
+    <ul class="nav nav-tabs">
+      <li class="active">
+        <a data-toggle="tab" href="#description">Описание последовательностей</a>
+      </li>
+      <li>
+        <a data-toggle="tab" href="#characteristics">Выравнивания</a>
+      </li>
+    </ul>
+    <div class="tab-content">
+      <div class="tab-pane active" id="description">
+            <table class="table">
       <thead>
         <tr>
           <th scope="col">Описание</th>
           <th scope="col">Научное название</th>
+          <th scope="col">E</th>
+          <th scope="col">Покрытие запроса</th>
 {#          <th scope="col">Ссылка</th>#}
         </tr>
       </thead>
       <tbody>
-      {% for r in data['results'] %}
-        <tr>
-            <td><a href="/detail/{{ r['id'] }}">{{ r['a'] }}</a></td>
-            <td>{{ r['b'] }}</td>
-        </tr>
-      {% endfor %}
-{#        <tr>#}
-{#          <td>Mark</td>#}
-{#          <td>Otto</td>#}
-{#          <td>@mdo</td>#}
-{#        </tr>#}
-{#        <tr>#}
-{#          <td>Jacob</td>#}
-{#          <td>Thornton</td>#}
-{#          <td>@fat</td>#}
-{#        </tr>#}
-{#        <tr>#}
-{#          <th scope="row">3</th>#}
-{#          <td colspan="2">Larry the Bird</td>#}
-{#          <td>@twitter</td>#}
-{#        </tr>#}
+{#            <td><a href="/detail/{{ r['id'] }}">{{ r['name'] }}</a></td> #a#}
+        {% for r in data['results'] %}
+           <tr>
+                <td> {{ r['def'] }} </td>
+                <td> {{ " ".join(r['name'].split(' ')[1:3]) }} </td>
+                <td> {{ r['evalue'] }} </td>
+                <td> {{ r['query_cover'] }} </td>
+           </tr>
+        {% endfor %}
       </tbody>
     </table>
+      </div>
+      <div class="tab-pane" id="characteristics">
+      <div class="container">
+{#          <td> {{ r['name'] }} </td>#}
+        {% for r in data['alignment'] %}
+            <td>
+                <pre>
+                    {{ r['Hsp_qseq'] }}
+                    {{ r['Hsp_midline'] }}
+                    {{ r['Hsp_hseq'] }}
+                </pre>
+            </td>
+        {% endfor %}
+      </div>
+    </div>
+
 </div>
 {% endblock %}
 

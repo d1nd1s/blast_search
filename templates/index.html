@@ -3,16 +3,47 @@
 {% block title %}BLAST Search{% endblock %}
 
 {% block content %}
-    <form class="form" method="post" role="form">
-        <div class="container">
-            <h1>BLAST search</h1>
-            {{ form.hidden_tag() }}
-            {{ wtf.form_errors(form, hiddens="only") }}
-            {{ wtf.form_field(form.sequence)}}
-            {{ wtf.form_field(form.search_db) }}
-            {{ wtf.form_field(form.max_target_sequences) }}
-            {{ wtf.form_field(form.short_query) }}
-            <button class="btn btn-primary" type="submit">Search</button>
+    <ul class="nav nav-tabs nav-justified">
+      <li class="active"><a data-toggle="tab" href="#blastn">Blastn</a></li>
+      <li><a data-toggle="tab"href="#blastp">Blastp</a></li>
+    </ul>
+    <div class="tab-content">
+        <div class="tab-pane active"  id="blastn">
+            <div class="container">
+                <form class="form" method="post" role="form">
+                    <h1>BLASTN</h1>
+                    {{ wtf.form_field(form.job_title) }}
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, hiddens="only") }}
+                    {{ wtf.form_field(form.sequence)}}
+                    {{ wtf.form_field(form.query_from) }}
+                    {{ wtf.form_field(form.query_to) }}
+                    {{ wtf.form_field(form.search_db) }}
+                    {{ wtf.form_field(form.max_target_sequences) }}
+                    {{ wtf.form_field(form.short_query) }}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
         </div>
-    </form>
+        <div class="tab-pane"  id="blastp">
+            <div class="container">
+                <form class="form" method="post" role="form">
+                    <h1>BLASTP</h1>
+                    {{ wtf.form_field(form.job_title) }}
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, hiddens="only") }}
+                    {{ wtf.form_field(form.sequence)}}
+                    {{ wtf.form_field(form.query_from) }}
+                    {{ wtf.form_field(form.query_to) }}
+                    {{ wtf.form_field(form.search_db) }}
+                    {{ wtf.form_field(form.max_target_sequences) }}
+                    {{ wtf.form_field(form.short_query) }}
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+
 {% endblock %}
