@@ -27,50 +27,27 @@ Bootstrap(app)
 def index():
     form = SearchForm()
     if form.validate_on_submit():
+        cmd = ['blastn', '-db',  'db/'+form.data['search_db'], '-outfmt',  '5', '-max_target_seqs', str(form.data['max_target_sequences'])]
         # input_bytes = form.data['sequence'].decode('utf8')
-        if form.data['query_from'] and form.data['query_to']:
-            lb = int(form.data['query_from']) - 1
-            rb = int(form.data['query_to']) - 1
-            seq = form.data['sequence'][lb:rb]
-        else:
-            seq = form.data['sequence']
-        cmd = ['blastn', '-db', 'db/' + form.data['search_db'], '-outfmt', '5',
-               '-max_target_seqs', str(form.data['max_target_sequences'])
-               ]
         sp_run = subprocess.run(cmd,
-                                input=seq,
+                                input=form.data['sequence'],
                                 capture_output=True,
                                 encoding='utf-8')
+
         result = Selector(
             text=sp_run.stdout,
             type='xml')
+
         dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
         # s = {(k, v) for (k, v) in dict.items() if v}
-        a = "".join(dict['Hsp_midline'])
-        data = {'query': form.data['sequence'], 'result': dict, 'db': form.data['search_db'],
-                'program': dict['BlastOutput_program'], 'query_id': dict['BlastOutput_query-ID'],
-                'results': [{'name': dict['Hit_def'], 'def': dict['Hit_def'], 'evalue': dict['Hsp_evalue'],
-                             'query_cover': str(round((len(a.replace(' ','')) / len(a)) * 100)) + '%'}],
-                'alignment': [{'Hsp_qseq': dict['Hsp_qseq'], 'Hsp_hseq': dict['Hsp_hseq'], 'Hsp_midline': a}],
-                'job_title': form.data['job_title'],
-                'query_from': form.data['query_from'],
-                'query_to': form.data['query_to'],
-                }
-        return render_template('result.html', data=data)
+        return render_template('result.html', data={'query': form.data['sequence'], 'result': dict, 'db': form.data['search_db'],
+                                                    'program': dict['BlastOutput_program'], 'query_id': dict['BlastOutput_query-ID'],
+                                                    'results': [{'a': 1, 'b': 2, 'id':'aasdasd'}, {'a':3, 'b':4, 'id':'sdfsdf'}]
+                                                    })
     return render_template('index.html', form=form)
 
-
-# [{'name': i, 'def': i, 'id': } for i in dict['Hit_def']]
-# [{'a': 1, 'b': 2, 'id':'aasdasd'}, {'a':3, 'b':4, 'id':'sdfsdf'}]
-# }
-
-# Hit_def - описание
-# Hsp_qseq - последовательность которую ищем
-# Hsp_hseq - то что нашлось
-# Hsp_midline - разделитель
-
 # def allowed_file(filename):
-#     return '.' in filename and
+#     return '.' in filename and \
 #            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 # @app.route('/login', methods=["GET", "POST"])
 # def login():
