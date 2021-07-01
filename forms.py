@@ -6,7 +6,7 @@ from wtforms import StringField, BooleanField, IntegerField,\
 from wtforms.validators import DataRequired, NumberRange
 
 MAX_TAR_SEQ = ["Не выбрано", 10, 50, 100, 250, 500, 1000, 5000]
-DB_CHOICES = [s.name[:-4] for s in os.scandir('db2') if s.name[-3:] == 'nin']
+DB_CHOICES = [s.name[:-4] for s in os.scandir('db') if s.name[-3:] == 'nin']
 DB_CHOICES_PROT = [s.name[:-4] for s in os.scandir('dbp') if s.name[-3:] == 'pin']
 
 

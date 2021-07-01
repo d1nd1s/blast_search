@@ -1,3 +1,4 @@
+{% extends "bootstrap/base.html" %}
 {% block title %}BLAST search result{% endblock %}
 
 {% block content %}
@@ -44,7 +45,7 @@
       </div>
       <div class="tab-pane" id="characteristics">
         <div class="container">
-            { % for r in data['alignment'] %}
+            {% for r in data['alignment'] %}
                 <td>
                     <pre>
                         {{ r['Hsp_qseq'] }}

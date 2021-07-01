@@ -12,7 +12,8 @@
             <div class="container">
                 <form class="form" method="post" role="form">
                     <h1>BLASTN</h1>
-                    {{ wtf.form_field(form.job_title) }}
+		    {#
+		    {{ wtf.form_field(form.job_title) }} #}
                     {{ form.hidden_tag() }}
                     {{ wtf.form_errors(form, hiddens="only") }}
                     {{ wtf.form_field(form.sequence)}}

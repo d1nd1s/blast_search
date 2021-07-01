@@ -17,14 +17,14 @@ Bootstrap(app)
 def index():
     form = SearchForm()
     if form.validate_on_submit():
-        if form.query_from and form.query_to:
-            qry_fr = int(form.query_from) - 1
-            qry_to = int(form.query_to) - 1
-            seq = str(form.sequence)[qry_fr:qry_to]
+        if form.data['query_from'] and form.data['query_to']:
+            qry_fr = int(form.data['query_from']) - 1
+            qry_to = int(form.data['query_to']) - 1
+            seq = str(form.data['sequence'])[qry_fr:qry_to]
         else:
-            seq = form.sequence
-        cmd = ['blastn', '-db', 'db/' + form.search_db, '-outfmt', '5',
-               '-max_target_seqs', str(form.max_target_sequences)
+            seq = form.data['sequence']
+        cmd = ['blastn', '-db', 'db/' + form.data['search_db'], '-outfmt', '5',
+               '-max_target_seqs', str(form.data['max_target_sequences'])
                ]
         sp_run = subprocess.run(cmd,
                                 input=seq,
@@ -39,9 +39,9 @@ def index():
             return "Ничего не нашлось"
         midln = "".join(blast_dict['Hsp_midline'])
         data = {
-                'query': form.sequence,
+                'query': form.data['sequence'],
                 'result': blast_dict,
-                'db': form.search_db,
+                'db': form.data['search_db'],
                 'program': blast_dict['BlastOutput_program'],
                 'query_id': blast_dict['BlastOutput_query-ID'],
                 'results': [{'name': blast_dict['Hit_def'],
@@ -52,9 +52,9 @@ def index():
                 'alignment': [{'Hsp_qseq': blast_dict['Hsp_qseq'],
                                'Hsp_hseq': blast_dict['Hsp_hseq'],
                                'Hsp_midline': midln}],
-                'job_title': form.job_title,
-                'query_from': form.query_from,
-                'query_to': form.query_to}
+                'job_title': form.data['job_title'],
+                'query_from': form.data['query_from'],
+                'query_to': form.data['query_to']}
         return render_template('result.html', data=data)
     return render_template('index.html', form=form)
 
