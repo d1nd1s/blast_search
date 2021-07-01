@@ -36,7 +36,7 @@ def index():
             type='xml')
         blast_dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
         if 'Hsp_midline' not in blast_dict:
-            return "Ничего не нашлось"
+            return 'Результаты выравнивания не найдены'
         midln = "".join(blast_dict['Hsp_midline'])
         data = {
                 'query': form.data['sequence'],
