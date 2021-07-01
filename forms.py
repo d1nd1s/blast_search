@@ -15,13 +15,21 @@ class SearchForm(FlaskForm):
         'Последовательность для поиска',
         [validators.length(min=10, message='Минимальная длина строки для поиска: 10 нуклеотидов')],
         render_kw={"rows": 7, "cols": 11})
-    query_from = StringField('От', [validators.length(max=20)])
+    query_from = StringField('От', [validators.optional(), validators.length(max=20)])
     query_to = StringField('Дo', [validators.optional(), validators.length(max=20)])
     job_title = TextField('Название запроса')
-    search_db = SelectField('База данных, в которой будет производиться поиск',
-                            choices=DB_CHOICES, validators=[DataRequired()])
     max_target_sequences = IntegerField(
         'Максимальное число выдаваемых последовательностей',
         default=10, validators=[NumberRange(
             0, 100, message='Введите число в диапазоне от 0 до 100')])
     short_query = BooleanField('Короткий запрос (запрос длиной до 30)')
+
+
+class BlastnForm(SearchForm):
+    search_db = SelectField('База данных, в которой будет производиться поиск',
+                            choices=DB_CHOICES, validators=[DataRequired()])
+
+
+class BlastpForm(SearchForm):
+    search_db = SelectField('База данных, в которой будет производиться поиск',
+                            choices=DB_CHOICES_PROT, validators=[DataRequired()])

@@ -11,16 +11,16 @@
         <div class="tab-pane active"  id="blastn">
             <div class="container">
                 <form class="form" method="post" role="form">
+                    <input type="hidden" name="which-form" value="blastn"/>
                     <h1>BLASTN</h1>
-                    {{ wtf.form_field(form.job_title) }}
-                    {{ form.hidden_tag() }}
-                    {{ wtf.form_errors(form, hiddens="only") }}
-                    {{ wtf.form_field(form.sequence)}}
-                    {{ wtf.form_field(form.query_from) }}
-                    {{ wtf.form_field(form.query_to) }}
-                    {{ wtf.form_field(form.search_db) }}
-                    {{ wtf.form_field(form.max_target_sequences) }}
-                    {{ wtf.form_field(form.short_query) }}
+                    {{ form_blastn.hidden_tag() }}
+                    {{ wtf.form_errors(form_blastn, hiddens="only") }}
+                    {{ wtf.form_field(form_blastn.sequence)}}
+                    {{ wtf.form_field(form_blastn.query_from) }}
+                    {{ wtf.form_field(form_blastn.query_to) }}
+                    {{ wtf.form_field(form_blastn.search_db) }}
+                    {{ wtf.form_field(form_blastn.max_target_sequences) }}
+                    {{ wtf.form_field(form_blastn.short_query) }}
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
@@ -28,22 +28,19 @@
         <div class="tab-pane"  id="blastp">
             <div class="container">
                 <form class="form" method="post" role="form">
+                    <input type="hidden" name="which-form" value="blastp"/>
                     <h1>BLASTP</h1>
-                    {{ wtf.form_field(form.job_title) }}
-                    {{ form.hidden_tag() }}
-                    {{ wtf.form_errors(form, hiddens="only") }}
-                    {{ wtf.form_field(form.sequence)}}
-                    {{ wtf.form_field(form.query_from) }}
-                    {{ wtf.form_field(form.query_to) }}
-                    {{ wtf.form_field(form.search_db) }}
-                    {{ wtf.form_field(form.max_target_sequences) }}
-                    {{ wtf.form_field(form.short_query) }}
+                    {{ form_blastp.hidden_tag() }}
+                    {{ wtf.form_errors(form_blastp, hiddens="only") }}
+                    {{ wtf.form_field(form_blastp.sequence)}}
+                    {{ wtf.form_field(form_blastp.query_from) }}
+                    {{ wtf.form_field(form_blastp.query_to) }}
+                    {{ wtf.form_field(form_blastp.search_db) }}
+                    {{ wtf.form_field(form_blastp.max_target_sequences) }}
+                    {{ wtf.form_field(form_blastp.short_query) }}
                     <button class="btn btn-primary" type="submit">Search</button>
                 </form>
             </div>
         </div>
     </div>
-
-
-
 {% endblock %}
