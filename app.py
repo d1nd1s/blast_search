@@ -3,10 +3,10 @@ import subprocess
 
 from scrapy.selector import Selector
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 
-from forms import SearchForm
+from forms import BlastnForm, BlastpForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(32)
@@ -15,10 +15,24 @@ Bootstrap(app)
 
 @app.route('/', methods=["GET", "POST"])
 def index():
-    form = SearchForm()
+    form_n = BlastnForm()
+    form_p = BlastpForm()
+
+    if request.method == 'GET':
+        return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
+
+    # form = None
+    if request.form['which-form'] == 'blastn':
+        program = 'blastn'
+        form = form_n
+        db_path = 'db/'
+    else:
+        program = 'blastp'
+        form = form_p
+        db_path = 'dbp/'
 
     if not form.validate_on_submit():
-        return render_template('index.html', form=form)
+        return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
 
     if form.query_from.data and form.query_to.data:
         qry_fr = int(form.query_from.data) - 1
@@ -26,7 +40,8 @@ def index():
         seq = str(form.sequence.data)[qry_fr:qry_to]
     else:
         seq = form.sequence.data
-    cmd = ['blastn', '-db', 'db/' + form.search_db.data, '-outfmt', '5',
+
+    cmd = [program, '-db', db_path + form.search_db.data, '-outfmt', '5',
            '-max_target_seqs', str(form.max_target_sequences.data)]
     try:
         sp_run = subprocess.run(cmd,
@@ -34,16 +49,17 @@ def index():
                                 capture_output=True,
                                 encoding='utf-8',
                                 check=True)
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as err:
+        print(err)
         return render_template('except.html')
 
     result = Selector(
         text=sp_run.stdout,
         type='xml')
     blast_dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
-
     if 'Hsp_midline' not in blast_dict:
         return render_template('nothing_found.html')
+
     midln = "".join(blast_dict.get('Hsp_midline'))
     data = {
         'query': form.sequence.data,
