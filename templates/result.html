@@ -1,3 +1,4 @@
+{% extends "bootstrap/base.html" %}
 {% block title %}BLAST search result{% endblock %}
 
 {% block content %}
@@ -8,7 +9,6 @@
     <div>Program: <strong>{{ data.program }}</strong></div>
     <div>Query ID: <strong>{{ data.query_id }}</strong></div>
     <div>Job Title: <strong>{{ data.job_title }}</strong></div>
-
     <a href="{{ url_for('index') }}">Back</a>
     <h3>Search result</h3>
     <ul class="nav nav-tabs">
@@ -31,27 +31,49 @@
         </tr>
       </thead>
       <tbody>
-        {% for r in data['results'] %}
-           <tr>
-                <td> {{ r['def'] }} </td>
-                <td> {{ " ".join(r['name'].split(' ')[1:3]) }} </td>
-                <td> {{ r['evalue'] }} </td>
-                <td> {{ r['query_cover'] }} </td>
-           </tr>
-        {% endfor %}
+{#        {% for r in data['results'] %}#}
+{#           <tr>#}
+{#                <td> {{ r['def'] }} </td>#}
+{#                <td> {{ " ".join(r['name'].split(' ')[1:3]) }} </td>#}
+{#                <td> {{ r['evalue'] }} </td>#}
+{#                <td> {{ r['query_cover'] }} </td>#}
+{#           </tr>#}
+{#        {% endfor %}#}
+            {% for hit in data['hits'] %}
+                {% for hsp in data['hits'][hit] %}
+                    <tr>
+                        <td> {{ hit }} </td>
+                        <td> {{ " ".join(hit.split(' ')[1:3]) }} </td>
+                        <td> {{ hsp['hsp_evalue'] }} </td>
+                        <td> {{ hsp['query_cover'] }}</td>
+                    </tr>
+                {% endfor %}
+            {% endfor %}
       </tbody>
     </table>
       </div>
       <div class="tab-pane" id="characteristics">
         <div class="container">
-            { % for r in data['alignment'] %}
-                <td>
-                    <pre>
-                        {{ r['Hsp_qseq'] }}
-                        {{ r['Hsp_midline'] }}
-                        {{ r['Hsp_hseq'] }}
-                    </pre>
-                </td>
+{#            {% for r in data['alignment'] %}#}
+{#                <td>#}
+{#                    <pre>#}
+{#                        {{ r['Hsp_qseq'] }}#}
+{#                        {{ r['Hsp_midline'] }}#}
+{#                        {{ r['Hsp_hseq'] }}#}
+{#                    </pre>#}
+{#                </td>#}
+{#            {% endfor %}#}
+            {% for hit in data['hits'] %}
+                {{ hit }}
+                <pre>
+                    {% for hsp in data['hits'][hit] %}
+                    <td>
+                            {{ hsp['qseq'] }}
+                            {{ hsp['midline'] }}
+                            {{ hsp['hseq'] }}
+                    </td>
+                    {% endfor %}
+                </pre>
             {% endfor %}
         </div>
       </div>

@@ -56,6 +56,29 @@ def index():
     result = Selector(
         text=sp_run.stdout,
         type='xml')
+
+    hits = {}
+    for hit in result.xpath('//Hit'):
+        hit_def = hit.xpath('.//Hit_def/text()').get()
+        hsp_lst = []
+        for j, hsp in enumerate(hit.xpath('.//Hsp')):
+            print('HSP', j + 1)
+            hsp_score = hsp.xpath('.//Hsp_score/text()').get()
+            hsp_evalue = hsp.xpath('.//Hsp_evalue/text()').get()
+            qseq = hsp.xpath('.//Hsp_qseq/text()').get()
+            hseq = hsp.xpath('.//Hsp_hseq/text()').get()
+            midline = hsp.xpath('.//Hsp_midline/text()').get()
+            query_cover = str(round((len(midline.replace(' ', ''))
+                                     / len(midline)) * 100)) + '%'
+            hsp_dict = {'hsp_evalue': hsp_evalue,
+                        'hsp_score': hsp_score,
+                        'qseq': qseq,
+                        'midline': midline,
+                        'hseq': hseq,
+                        'query_cover': query_cover}
+            hsp_lst.append(hsp_dict)
+        hits[hit_def] = hsp_lst
+
     blast_dict = {c.root.tag: c.xpath('./text()').get().strip() for c in result.xpath('//*')}
     if 'Hsp_midline' not in blast_dict:
         return render_template('nothing_found.html')
@@ -77,7 +100,8 @@ def index():
                        'Hsp_midline': midln}],
         'job_title': form.job_title.data,
         'query_from': form.query_from.data,
-        'query_to': form.query_to.data}
+        'query_to': form.query_to.data,
+        'hits': hits}
     return render_template('result.html', data=data)
 
 
