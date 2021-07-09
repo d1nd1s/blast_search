@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField, IntegerField,\
+from wtforms import BooleanField, IntegerField,\
     TextField, validators, TextAreaField, SelectField
 from wtforms.validators import InputRequired, NumberRange
 
@@ -9,8 +9,8 @@ class SearchForm(FlaskForm):
         'Последовательность для поиска',
         [validators.length(min=10, message='Минимальная длина строки для поиска: 10 нуклеотидов')],
         render_kw={"rows": 7, "cols": 11})
-    query_from = StringField('От', [validators.optional(), validators.length(max=20)])
-    query_to = StringField('Дo', [validators.optional(), validators.length(max=20)])
+    query_from = IntegerField('От', validators=[NumberRange(min=0)])
+    query_to = IntegerField('Дo', validators=[NumberRange(min=0)])
     job_title = TextField('Название запроса')
     max_target_sequences = IntegerField(
         'Максимальное число выдаваемых последовательностей',

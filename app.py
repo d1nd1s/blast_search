@@ -32,18 +32,27 @@ def index():
     if request.method == 'GET':
         return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
 
-    if request.form['which-form'] == 'blastn':
-        program = 'blastn'
-        form = form_n
-        db_path = data_config.db_blast_n[form_n.search_db.data]
-    else:
-        program = 'blastp'
-        form = form_p
-        db_path = data_config.db_blast_p[form_p.search_db.data]
+    if request.form['which-form'] == 'blastn' and form_n.validate_on_submit():
+        return process_blastn(form_n)
+    elif request.form['which-form'] == 'blastp' and form_p.validate_on_submit():
+        return process_blastp(form_p)
 
-    if not form.validate_on_submit():
-        return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
+    return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
 
+
+def process_blastn(form):
+    program = 'blastn'
+    db_path = data_config.db_blast_n[form.search_db.data]
+    return process_blast(form, program, db_path)
+
+
+def process_blastp(form):
+    program = 'blastp'
+    db_path = data_config.db_blast_p[form.search_db.data]
+    return process_blast(form, program, db_path)
+
+
+def process_blast(form, program, db_path):
     if form.query_from.data and form.query_to.data:
         qry_fr = int(form.query_from.data) - 1
         qry_to = int(form.query_to.data) - 1

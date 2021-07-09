@@ -1,0 +1,13 @@
+<form class="form" method="post" role="form">
+    <input type="hidden" name="which-form" value="blastn"/>
+    <h1>BLASTN</h1>
+    {{ form_blastn.hidden_tag() }}
+    {{ wtf.form_errors(form_blastn, hiddens="only") }}
+    {{ wtf.form_field(form_blastn.sequence)}}
+    {{ wtf.form_field(form_blastn.query_from) }}
+    {{ wtf.form_field(form_blastn.query_to) }}
+    {{ wtf.form_field(form_blastn.search_db) }}
+    {{ wtf.form_field(form_blastn.max_target_sequences) }}
+    {{ wtf.form_field(form_blastn.short_query) }}
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>
