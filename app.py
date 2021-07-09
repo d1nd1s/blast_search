@@ -14,7 +14,7 @@ app.config.from_object('config.Config')
 Bootstrap(app)
 
 data_config = config.get_data_config(app.config['DATA_CONFIG'])
-logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
+logging.basicConfig(level=logging.DEBUG,
                     handlers=[
                         logging.FileHandler(app.config['LOG_FILE']),
                         logging.StreamHandler()
@@ -74,7 +74,7 @@ def process_blast(form, program, db_path):
     if not result.hits:
         return render_template('nothing_found.html')
 
-    return render_template('result.html', result=result)
+    return render_template('result.html', result=result, max_len=60)
 
 
 if __name__ == '__main__':

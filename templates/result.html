@@ -49,11 +49,13 @@
                 {{ hit.hit_def }}
                 <pre>
                     {% for hsp in hit.hsps %}
-                    <td>
-                        {{ hsp.qseq }}
-                        {{ hsp.midline }}
-                        {{ hsp.hseq }}
-                    </td>
+                        {% for i in range(0, hsp.query_to - hsp.query_from, max_len) %}
+                        <tr>
+                            <td> query   {{ hsp.query_from + i }} {{ hsp.qseq[i:i+max_len] }} {{ [hsp.query_from + i + max_len, hsp.query_to]|min }}</td>
+                            <td>           {{ hsp.midline[i:i+max_len] }} </td>
+                            <td> subject {{ hsp.hit_from + i }} {{ hsp.hseq[i:i+max_len] }} {{ [hsp.hit_from + i + max_len, hsp.hit_to]|min }}</td>
+                        </tr>
+                        {% endfor %}
                     {% endfor %}
                 </pre>
             {% endfor %}

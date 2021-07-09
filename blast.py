@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import logging
 from typing import List
 
+from lxml import etree
 from scrapy.selector import Selector
 
 
@@ -104,6 +105,10 @@ def _parse_xml(xml_data):
     return result
 
 
+def dtd_fine_name(args):
+    pass
+
+
 class BlastRunner:
     def __init__(self,
                  program: str,
@@ -128,5 +133,10 @@ class BlastRunner:
         except subprocess.CalledProcessError as err:
             logging.error('Blast execution error: %s', err.stderr)
             return None
+
+        # dtd = etree.DTD(open('data/blastoutput_mod.dtd'))
+        # tree = etree.XML(sp_run)
+        # if not dtd.validate(tree):
+        #     return None
 
         return _parse_xml(sp_run.stdout)
