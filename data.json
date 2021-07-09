@@ -1,0 +1,14 @@
+{
+  "blastn": [
+    {
+      "name": "Тестовая база нуклеотидов",
+      "path": "/home/serge/workspace/blast_data/test_db_nucl/test.fa"
+    }
+  ],
+  "blastp": [
+    {
+      "name": "Тестовая база белков",
+      "path": "/home/serge/workspace/blast_data/test_db_prot/test.fa"
+    }
+  ]
+}

@@ -1,22 +1,33 @@
 ﻿import os
+import logging
 from tempfile import NamedTemporaryFile
-
 
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 
-from forms import BlastnForm, BlastpForm
+from forms import SearchForm
 import blast
+import config
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.urandom(32)
+app.config.from_object('config.Config')
 Bootstrap(app)
+
+data_config = config.get_data_config(app.config['DATA_CONFIG'])
+logging.basicConfig(encoding='utf-8', level=logging.DEBUG,
+                    handlers=[
+                        logging.FileHandler(app.config['LOG_FILE']),
+                        logging.StreamHandler()
+                    ])
 
 
 @app.route('/', methods=["GET", "POST"])
 def index():
-    form_n = BlastnForm()
-    form_p = BlastpForm()
+    form_n = SearchForm()
+    form_n.search_db.choices = list(data_config.db_blast_n.keys())
+
+    form_p = SearchForm()
+    form_p.search_db.choices = list(data_config.db_blast_p.keys())
 
     if request.method == 'GET':
         return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
@@ -24,11 +35,11 @@ def index():
     if request.form['which-form'] == 'blastn':
         program = 'blastn'
         form = form_n
-        db_path = 'db/'
+        db_path = data_config.db_blast_n[form_n.search_db.data]
     else:
         program = 'blastp'
         form = form_p
-        db_path = 'dbp/'
+        db_path = data_config.db_blast_p[form_p.search_db.data]
 
     if not form.validate_on_submit():
         return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
@@ -40,13 +51,10 @@ def index():
     else:
         seq = form.sequence.data
 
-    query_file = NamedTemporaryFile(mode="w+", delete=False)
-    query_file.write(seq)
-    query_file.close()
+    with NamedTemporaryFile(mode="w+", delete=False) as query_file:
+        query_file.write(seq)
 
-    db_file = db_path + form.search_db.data
-
-    runner = blast.BlastRunner(program, db_file)
+    runner = blast.BlastRunner(program, db_path)
     result = runner.run(query_file)
 
     os.remove(query_file.name)

@@ -1,13 +1,7 @@
-import os
-
 from flask_wtf import FlaskForm
 from wtforms import StringField, BooleanField, IntegerField,\
     TextField, validators, TextAreaField, SelectField
-from wtforms.validators import DataRequired, NumberRange
-
-MAX_TAR_SEQ = ["Не выбрано", 10, 50, 100, 250, 500, 1000, 5000]
-DB_CHOICES = [s.name[:-4] for s in os.scandir('db2') if s.name[-3:] == 'nin']
-DB_CHOICES_PROT = [s.name[:-4] for s in os.scandir('dbp') if s.name[-3:] == 'pin']
+from wtforms.validators import InputRequired, NumberRange
 
 
 class SearchForm(FlaskForm):
@@ -23,13 +17,5 @@ class SearchForm(FlaskForm):
         default=10, validators=[NumberRange(
             0, 100, message='Введите число в диапазоне от 0 до 100')])
     short_query = BooleanField('Короткий запрос (запрос длиной до 30)')
-
-
-class BlastnForm(SearchForm):
     search_db = SelectField('База данных, в которой будет производиться поиск',
-                            choices=DB_CHOICES, validators=[DataRequired()])
-
-
-class BlastpForm(SearchForm):
-    search_db = SelectField('База данных, в которой будет производиться поиск',
-                            choices=DB_CHOICES_PROT, validators=[DataRequired()])
+                            validators=[InputRequired()])

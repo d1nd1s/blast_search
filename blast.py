@@ -1,5 +1,6 @@
 import subprocess
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+import logging
 from typing import List
 
 from scrapy.selector import Selector
@@ -32,7 +33,7 @@ class BlastHit:
     num: int
     hit_id: str
     hit_def: str
-    accession: int
+    accession: str
     hit_len: int
     hsps: List[HitHSP]
 
@@ -85,7 +86,7 @@ def _parse_xml(xml_data):
             num=int(hit.xpath('.//Hit_num/text()').get()),
             hit_id=hit.xpath('.//Hit_id/text()').get(),
             hit_def=hit.xpath('.//Hit_def/text()').get(),
-            accession=int(hit.xpath('.//Hit_accession/text()').get()),
+            accession=hit.xpath('.//Hit_accession/text()').get(),
             hit_len=int(hit.xpath('.//Hit_len/text()').get()),
             hsps=hsps
         )
@@ -125,6 +126,7 @@ class BlastRunner:
                                     encoding='utf-8',
                                     check=True)
         except subprocess.CalledProcessError as err:
+            logging.error('Blast execution error: %s', err.stderr)
             return None
 
         return _parse_xml(sp_run.stdout)
