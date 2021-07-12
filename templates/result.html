@@ -2,65 +2,91 @@
 {% block title %}BLAST search result{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h1>Search result</h1>
-    <div>Database: <strong>{{ result.db }}</strong></div>
-    <div>Query: <strong>{{ result.query_def }}</strong></div>
-    <div>Program: <strong>{{ result.program }}</strong></div>
-    <div>Query ID: <strong>{{ result.query_id }}</strong></div>
-    <a href="{{ url_for('index') }}">Back</a>
-    <h3>Search result</h3>
-    <ul class="nav nav-tabs">
-      <li class="active">
-        <a data-toggle="tab" href="#description">Описание последовательностей</a>
-      </li>
-      <li>
-        <a data-toggle="tab" href="#characteristics">Выравнивания</a>
-      </li>
-    </ul>
-    <div class="tab-content">
-      <div class="tab-pane active" id="description">
-            <table class="table">
-      <thead>
-        <tr>
-          <th scope="col">Описание</th>
-          <th scope="col">Научное название</th>
-          <th scope="col">E</th>
-          <th scope="col">Покрытие запроса</th>
-        </tr>
-      </thead>
-      <tbody>
-            {% for hit in result.hits %}
-                {% for hsp in hit.hsps %}
+    <div class="container">
+        <h1>Search result</h1>
+        <div>Database: <strong>{{ result.db }}</strong></div>
+        <div>Query: <strong>{{ result.query_def }}</strong></div>
+        <div>Program: <strong>{{ result.program }}</strong></div>
+        <div>Query ID: <strong>{{ result.query_id }}</strong></div>
+        <a href="{{ url_for('index') }}">Back</a>
+        <h3>Search result</h3>
+        <ul class="nav nav-tabs">
+            <li class="active">
+                <a data-toggle="tab" href="#description">Описание последовательностей</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#characteristics">Выравнивания</a>
+            </li>
+        </ul>
+        <div class="tab-content">
+            <div class="tab-pane active" id="description">
+                <table class="table">
+                    <thead>
                     <tr>
-                        <td> {{ hit.hit_def }} </td>
-                        <td> {{ " ".join(hit.hit_def.split(' ')[1:3]) }} </td>
-                        <td> {{ hsp.evalue }} </td>
-                        <td> {{ hsp.query_cover }}</td>
+                        <th scope="col">Описание</th>
+                        <th scope="col">Научное название</th>
+                        <th scope="col">E</th>
+                        <th scope="col">Покрытие запроса</th>
                     </tr>
-                {% endfor %}
-            {% endfor %}
-      </tbody>
-    </table>
-      </div>
-      <div class="tab-pane" id="characteristics">
-        <div class="container">
-            {% for hit in result.hits %}
-                {{ hit.hit_def }}
-                <pre>
-                    {% for hsp in hit.hsps %}
-                        {% for i in range(0, hsp.query_to - hsp.query_from, max_len) %}
-                        <tr>
-                            <td> query   {{ hsp.query_from + i }} {{ hsp.qseq[i:i+max_len] }} {{ [hsp.query_from + i + max_len, hsp.query_to]|min }}</td>
-                            <td>           {{ hsp.midline[i:i+max_len] }} </td>
-                            <td> subject {{ hsp.hit_from + i }} {{ hsp.hseq[i:i+max_len] }} {{ [hsp.hit_from + i + max_len, hsp.hit_to]|min }}</td>
-                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for hit in result.hits %}
+                        {% for hsp in hit.hsps %}
+                            <tr>
+                                <td> {{ hit.hit_def }} </td>
+                                <td> {{ " ".join(hit.hit_def.split(' ')[1:3]) }} </td>
+                                <td> {{ hsp.evalue }} </td>
+                                <td> {{ hsp.query_cover }}</td>
+                            </tr>
                         {% endfor %}
                     {% endfor %}
-                </pre>
-            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="tab-pane" id="characteristics">
+                <div class="border">
+                    {% for hit in result.hits %}
+                        <div class="border">
+                            <div class="border">
+                                <h4 align="center"> {{ hit.hit_def }} </h4>
+                            </div>
+                            {% for hsp in hit.hsps %}
+                            <div align="center">
+                                Score: {{ hsp.score }}
+                                Evalue: {{ hsp.evalue }}
+                                Gaps: {{ hsp.gaps }}
+                                Identities: {{ hsp.query_cover }}
+                            </div>
+                                <pre><code>
+                        {% for i in range(0, hsp.query_to - hsp.query_from, max_len) %}
+Query {{ "%4d"|format(hsp.query_from + i) }}  {{ hsp.qseq[i:i+max_len] }}  {{ "%d"|format([hsp.query_from + i + max_len, hsp.query_to]|min) }}
+            {{ hsp.midline[i:i+max_len] }}
+Sbjct {{ "%4d"|format(hsp.hit_from + i) }}  {{ hsp.hseq[i:i+max_len] }}  {{ "%d"|format([hsp.hit_from + i + max_len, hsp.hit_to]|min) }}
+                        {% endfor %}
+                                </code></pre>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-</div>
 {% endblock %}
+
+{#                            <table>#}
+{#                                <tr>#}
+{#                                    <td> query {{ hsp.query_from + i }}  </td>#}
+{#                                    <td> {{ hsp.qseq[i:i+max_len] }} </td>#}
+{#                                    <td> {{ [hsp.query_from + i + max_len, hsp.query_to]|min }} </td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td></td>#}
+{#                                <td> {{ hsp.midline[i:i+max_len] }} </td>#}
+{#                                    <td></td>#}
+{#                                </tr>#}
+{#                                <tr>#}
+{#                                    <td> subject {{ hsp.hit_from + i }} </td>#}
+{#                                    <td> {{ hsp.hseq[i:i+max_len] }} </td>#}
+{#                                    <td> {{ [hsp.hit_from + i + max_len, hsp.hit_to]|min }} </td>#}
+{#                                </tr>#}
+{#                            </table>#}
