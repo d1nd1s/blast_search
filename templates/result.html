@@ -15,12 +15,12 @@
                 <a data-toggle="tab" href="#description">Описание последовательностей</a>
             </li>
             <li>
-                <a data-toggle="tab" href="#characteristics">Выравнивания</a>
+                <a data-toggle="tab" id="desc_tab" href="#characteristics">Выравнивания</a>
             </li>
         </ul>
         <div class="tab-content">
             <div class="tab-pane active" id="description">
-                <table class="table">
+                <table class="table" id="elem_list">
                     <thead>
                     <tr>
                         <th scope="col">Описание</th>
@@ -30,10 +30,12 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for hit in result.hits %}
-                        {% for hsp in hit.hsps %}
+                    {% for i in range(result.hits|length) %}
+                        {% set hit = result.hits[i] %}
+                        {% for j in range(hit.hsps|length) %}
+                            {% set hsp = hit.hsps[j] %}
                             <tr>
-                                <td> {{ hit.hit_def }} </td>
+                                <td><a href="#{{ "hsp-%d-%d"|format(i,j) }}"> {{ hit.hit_def }} </a></td>
                                 <td> {{ " ".join(hit.hit_def.split(' ')[1:3]) }} </td>
                                 <td> {{ hsp.evalue }} </td>
                                 <td> {{ hsp.query_cover }}</td>
@@ -45,25 +47,27 @@
             </div>
             <div class="tab-pane" id="characteristics">
                 <div class="border">
-                    {% for hit in result.hits %}
+                    {% for i in range(result.hits|length) %}
+                        {% set hit = result.hits[i] %}
                         <div class="border">
                             <div class="border">
                                 <h4 align="center"> {{ hit.hit_def }} </h4>
                             </div>
-                            {% for hsp in hit.hsps %}
-                            <div align="center">
-                                Score: {{ hsp.score }}
-                                Evalue: {{ hsp.evalue }}
-                                Gaps: {{ hsp.gaps }}
-                                Identities: {{ hsp.query_cover }}
-                            </div>
-                                <pre><code>
+                            {% for j in range(hit.hsps|length) %}
+                                {% set hsp = hit.hsps[j] %}
+                                <section align="center" id="{{ "hsp-%d-%d"|format(i,j) }}">
+                                    Score: {{ hsp.score }}
+                                    Evalue: {{ hsp.evalue }}
+                                    Gaps: {{ hsp.gaps }}
+                                    Identities: {{ hsp.query_cover }}
+                                </section>
+                                    <pre><code>
                         {% for i in range(0, hsp.query_to - hsp.query_from, max_len) %}
 Query {{ "%4d"|format(hsp.query_from + i) }}  {{ hsp.qseq[i:i+max_len] }}  {{ "%d"|format([hsp.query_from + i + max_len, hsp.query_to]|min) }}
             {{ hsp.midline[i:i+max_len] }}
 Sbjct {{ "%4d"|format(hsp.hit_from + i) }}  {{ hsp.hseq[i:i+max_len] }}  {{ "%d"|format([hsp.hit_from + i + max_len, hsp.hit_to]|min) }}
                         {% endfor %}
-                                </code></pre>
+                                    </code></pre>
                             {% endfor %}
                         </div>
                     {% endfor %}
@@ -71,22 +75,14 @@ Sbjct {{ "%4d"|format(hsp.hit_from + i) }}  {{ hsp.hseq[i:i+max_len] }}  {{ "%d"
             </div>
         </div>
     </div>
-{% endblock %}
 
-{#                            <table>#}
-{#                                <tr>#}
-{#                                    <td> query {{ hsp.query_from + i }}  </td>#}
-{#                                    <td> {{ hsp.qseq[i:i+max_len] }} </td>#}
-{#                                    <td> {{ [hsp.query_from + i + max_len, hsp.query_to]|min }} </td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td></td>#}
-{#                                <td> {{ hsp.midline[i:i+max_len] }} </td>#}
-{#                                    <td></td>#}
-{#                                </tr>#}
-{#                                <tr>#}
-{#                                    <td> subject {{ hsp.hit_from + i }} </td>#}
-{#                                    <td> {{ hsp.hseq[i:i+max_len] }} </td>#}
-{#                                    <td> {{ [hsp.hit_from + i + max_len, hsp.hit_to]|min }} </td>#}
-{#                                </tr>#}
-{#                            </table>#}
+<script>
+      document.querySelectorAll("#elem_list a").forEach(function (link, i) {
+            link.addEventListener('click', event => {
+                  document.querySelector('#desc_tab').click();
+                  var id = link.getAttribute('href').replace('#', '')
+                  document.getElementById(id).scrollIntoView();
+            })
+      })
+</script>
+{% endblock %}
