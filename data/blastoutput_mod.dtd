@@ -10,6 +10,12 @@
 
 <!--$Id: blastxml.asn 100080 2007-03-12 16:05:35Z kazimird $ -->
 
+<!ENTITY % INTEGER '#PCDATA'>
+<!ENTITY % ENUM 'EMPTY'>
+<!ENTITY % BOOLEAN 'EMPTY'>
+<!ENTITY % NULL 'EMPTY'>
+<!ENTITY % REAL '#PCDATA'>
+<!ENTITY % OCTETS '#PCDATA'>
 
 <!ELEMENT BlastOutput (
         BlastOutput_program,
@@ -43,7 +49,6 @@
 <!ELEMENT BlastOutput_query-def (#PCDATA)>
 
 <!-- length of query sequence -->
-<!ENTITY % INTEGER>
 <!ELEMENT BlastOutput_query-len (%INTEGER;)>
 
 <!-- query sequence itself -->

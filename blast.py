@@ -105,10 +105,6 @@ def _parse_xml(xml_data):
     return result
 
 
-def dtd_fine_name(args):
-    pass
-
-
 class BlastRunner:
     def __init__(self,
                  program: str,
@@ -134,9 +130,12 @@ class BlastRunner:
             logging.error('Blast execution error: %s', err.stderr)
             return None
 
-        # dtd = etree.DTD(open('data/blastoutput_mod.dtd'))
-        # tree = etree.XML(sp_run)
-        # if not dtd.validate(tree):
-        #     return None
+        dtd = etree.DTD(file='data/blastoutput_mod.dtd')
+        tree = etree.XML(sp_run.stdout)
+
+        if not dtd.validate(tree):
+            logging.error('Error validating Blast output: %s',
+                          dtd.error_log.filter_from_errors()[0])
+            return None
 
         return _parse_xml(sp_run.stdout)
