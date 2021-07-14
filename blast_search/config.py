@@ -19,7 +19,7 @@ class Config():
     SQLALCHEMY_DATABASE_URI = 'sqlite:///requests.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    BLAST_DB_CONFIG = 'blast_search/data/blast_db.json'
+    BLAST_DB_CONFIG = 'data/blast_db.json'
     LOG_FILE = 'log.txt'
 
 

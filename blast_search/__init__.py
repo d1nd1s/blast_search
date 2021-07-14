@@ -33,7 +33,8 @@ def create_app(test_config=None):
                         logging.StreamHandler()
                     ])
 
-    app.config['BLAST_DB'] = get_blast_db_config(app.config['BLAST_DB_CONFIG'])
+    blast_db_config = os.path.join(os.path.dirname(__file__), app.config['BLAST_DB_CONFIG'])
+    app.config['BLAST_DB'] = get_blast_db_config(blast_db_config)
 
     app.register_blueprint(search_bp)
 

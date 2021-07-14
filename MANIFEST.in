@@ -1,0 +1,4 @@
+graft blast_search/data
+graft blast_search/static
+graft blast_search/templates
+global-exclude *.pyc
