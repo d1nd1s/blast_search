@@ -1,3 +1,4 @@
+import os
 import subprocess
 from dataclasses import dataclass
 import logging
@@ -134,7 +135,8 @@ class BlastRunner:
             logging.error('Blast execution error: %s', err.stderr)
             return None
 
-        dtd = etree.DTD(file='data/blastoutput_mod.dtd')
+        dtd_path = os.path.join(os.path.dirname(__file__), 'data/blastoutput_mod.dtd')
+        dtd = etree.DTD(file=dtd_path)
         tree = etree.XML(sp_run.stdout)
 
         if not dtd.validate(tree):

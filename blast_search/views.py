@@ -1,35 +1,25 @@
-﻿import os
-import logging
+"Blast search views"
+
+import os
 from tempfile import NamedTemporaryFile
 
-from flask import Flask, render_template, redirect, request, url_for
-from flask_bootstrap import Bootstrap
+from flask import Blueprint, current_app, render_template, redirect, request, url_for
 
-from forms import SearchForm
-from models import db, Request
-import blast
-import config
-
-app = Flask(__name__)
-app.config.from_object('config.Config')
-Bootstrap(app)
-db.init_app(app)
-
-data_config = config.get_data_config(app.config['DATA_CONFIG'])
-logging.basicConfig(level=logging.DEBUG,
-                    handlers=[
-                        logging.FileHandler(app.config['LOG_FILE']),
-                        logging.StreamHandler()
-                    ])
+from .forms import SearchForm
+from .models import db, Request
+from . import blast
 
 
-@app.route('/', methods=["GET", "POST"])
+search_bp = Blueprint('search', __name__, url_prefix='/')
+
+
+@search_bp.route('/', methods=["GET", "POST"])
 def index():
     form_n = SearchForm()
-    form_n.search_db.choices = list(data_config.db_blast_n.keys())
+    form_n.search_db.choices = list(current_app.config['BLAST_DB'].blastn.keys())
 
     form_p = SearchForm()
-    form_p.search_db.choices = list(data_config.db_blast_p.keys())
+    form_p.search_db.choices = list(current_app.config['BLAST_DB'].blastp.keys())
 
     if request.method == 'GET':
         return render_template('index.html', form_blastn=form_n, form_blastp=form_p)
@@ -44,13 +34,13 @@ def index():
 
 def process_blastn(form):
     program = 'blastn'
-    db_path = data_config.db_blast_n[form.search_db.data]
+    db_path = current_app.config['BLAST_DB'].blastn[form.search_db.data]
     return process_blast(form, program, db_path)
 
 
 def process_blastp(form):
     program = 'blastp'
-    db_path = data_config.db_blast_p[form.search_db.data]
+    db_path = current_app.config['BLAST_DB'].blastp[form.search_db.data]
     return process_blast(form, program, db_path)
 
 
@@ -77,10 +67,10 @@ def process_blast(form, program, db_path):
     if result is None:
         return render_template('except.html')
 
-    return redirect(url_for('search', req_id=search_req.id))
+    return redirect(url_for('search.search', req_id=search_req.id))
 
 
-@app.route('/search/<int:req_id>')
+@search_bp.route('/search/<int:req_id>')
 def search(req_id):
     search_req = Request.query.get(req_id)
     if search_req is None:
@@ -91,10 +81,3 @@ def search(req_id):
         return render_template('nothing_found.html')
 
     return render_template('result.html', result=result, max_len=60)
-
-
-if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-
-    app.run()

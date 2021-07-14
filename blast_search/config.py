@@ -19,27 +19,27 @@ class Config():
     SQLALCHEMY_DATABASE_URI = 'sqlite:///requests.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    DATA_CONFIG = 'data.json'
+    BLAST_DB_CONFIG = 'blast_search/data/blast_db.json'
     LOG_FILE = 'log.txt'
 
 
 @dataclass
-class DataConfig():
+class BlastDBConfig():
     "Blast data configuration"
-    db_blast_n: dict
-    db_blast_p: dict
+    blastn: dict
+    blastp: dict
 
 
-def get_data_config(config_file: str) -> DataConfig:
+def get_blast_db_config(config_file: str) -> BlastDBConfig:
     """ Parse config file into dataclass
     """
 
     with open(config_file) as json_file:
         data = json.load(json_file)
 
-        data_config = DataConfig(
-            db_blast_n={e["name"]:e["path"] for e in data["blastn"]},
-            db_blast_p={e["name"]:e["path"] for e in data["blastp"]},
+        blast_db_config = BlastDBConfig(
+            blastn={e["name"]:e["path"] for e in data["blastn"]},
+            blastp={e["name"]:e["path"] for e in data["blastp"]},
         )
 
-    return data_config
+    return blast_db_config
