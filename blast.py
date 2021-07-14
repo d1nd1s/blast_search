@@ -61,7 +61,7 @@ def _parse_xml(xml_data):
     hits = []
     for hit in selector.xpath('//Hit'):
         hsps = []
-        for j, hsp in enumerate(hit.xpath('.//Hsp')):
+        for hsp in hit.xpath('.//Hsp'):
             midline = hsp.xpath('.//Hsp_midline/text()').get()
             query_cover = str(round((len(midline.replace(' ', ''))
                                      / len(midline)) * 100)) + '%'
