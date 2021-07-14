@@ -2,16 +2,18 @@
 import logging
 from tempfile import NamedTemporaryFile
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, redirect, request, url_for
 from flask_bootstrap import Bootstrap
 
 from forms import SearchForm
+from models import db, Request
 import blast
 import config
 
 app = Flask(__name__)
 app.config.from_object('config.Config')
 Bootstrap(app)
+db.init_app(app)
 
 data_config = config.get_data_config(app.config['DATA_CONFIG'])
 logging.basicConfig(level=logging.DEBUG,
@@ -66,11 +68,25 @@ def process_blast(form, program, db_path):
     runner = blast.BlastRunner(program, db_path)
     result = runner.run(query_file)
 
+    search_req = Request(data=result.to_json())
+    db.session.add(search_req)
+    db.session.commit()
+
     os.remove(query_file.name)
 
     if result is None:
         return render_template('except.html')
 
+    return redirect(url_for('search', req_id=search_req.id))
+
+
+@app.route('/search/<int:req_id>')
+def search(req_id):
+    search_req = Request.query.get(req_id)
+    if search_req is None:
+        return render_template('search_id_error.html')
+
+    result = blast.BlastResult.from_json(search_req.data)
     if not result.hits:
         return render_template('nothing_found.html')
 
@@ -78,4 +94,7 @@ def process_blast(form, program, db_path):
 
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+
     app.run()
