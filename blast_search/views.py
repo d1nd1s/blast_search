@@ -55,8 +55,20 @@ def process_blast(form, program, db_path):
     with NamedTemporaryFile(mode="w+", delete=False) as query_file:
         query_file.write(seq)
 
+    params = blast.FormParameters(
+        max_target_sequences=form.max_target_sequences.data,
+        program_selection=form.program_selection.data,
+        tax_id=form.tax_id.data,
+        tax_id_neg=form.tax_id_neg.data,
+        short_query=form.short_query.data,
+        e_value=form.e_value.data,
+        word_size=form.word_size.data,
+        gapopen=form.gapopen.data,
+        gapextend=form.gapextend.data
+    )
+
     runner = blast.BlastRunner(program, db_path)
-    result = runner.run(query_file)
+    result = runner.run(query_file, params)
 
     search_req = Request(data=result.to_json())
     db.session.add(search_req)

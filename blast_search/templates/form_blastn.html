@@ -7,7 +7,25 @@
     {{ wtf.form_field(form_blastn.query_from) }}
     {{ wtf.form_field(form_blastn.query_to) }}
     {{ wtf.form_field(form_blastn.search_db) }}
-    {{ wtf.form_field(form_blastn.max_target_sequences) }}
-    {{ wtf.form_field(form_blastn.short_query) }}
+    <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample"
+                aria-expanded="false" aria-controls="collapseExample">
+            Параметры алгоритма
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample">
+        <div class="card card-body">
+                {{ wtf.form_field(form_blastn.max_target_sequences) }}
+                {{ wtf.form_field(form_blastn.program_selection) }}
+                {{ wtf.form_field(form_blastn.tax_id) }}
+                {{ wtf.form_field(form_blastn.tax_id_neg) }}
+                {{ wtf.form_field(form_blastn.short_query) }}
+                {{ wtf.form_field(form_blastn.e_value) }}
+                {{ wtf.form_field(form_blastn.word_size) }}
+                {{ wtf.form_field(form_blastn.gapopen) }}
+                {{ wtf.form_field(form_blastn.gapextend) }}
+
+        </div>
+    </div>
     <button class="btn btn-primary" type="submit">Search</button>
 </form>
