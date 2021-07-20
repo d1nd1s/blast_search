@@ -16,6 +16,9 @@ class Config():
     SECRET_KEY = os.urandom(32)
     FLASK_SECRET = SECRET_KEY
 
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///requests.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
     DATA_CONFIG = 'data.json'
     LOG_FILE = 'log.txt'
 

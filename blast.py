@@ -3,10 +3,12 @@ from dataclasses import dataclass
 import logging
 from typing import List
 
+from dataclasses_json import dataclass_json
 from lxml import etree
 from scrapy.selector import Selector
 
 
+@dataclass_json
 @dataclass
 class HitHSP:
     num: int
@@ -29,6 +31,7 @@ class HitHSP:
     query_cover: str
 
 
+@dataclass_json
 @dataclass
 class BlastHit:
     num: int
@@ -39,6 +42,7 @@ class BlastHit:
     hsps: List[HitHSP]
 
 
+@dataclass_json
 @dataclass
 class FormParameters:
     max_target_sequences: int
@@ -70,7 +74,7 @@ def _parse_xml(xml_data):
     hits = []
     for hit in selector.xpath('//Hit'):
         hsps = []
-        for j, hsp in enumerate(hit.xpath('.//Hsp')):
+        for hsp in hit.xpath('.//Hsp'):
             midline = hsp.xpath('.//Hsp_midline/text()').get()
             query_cover = str(round((len(midline.replace(' ', ''))
                                      / len(midline)) * 100)) + '%'

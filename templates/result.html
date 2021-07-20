@@ -63,9 +63,9 @@
                                 </section>
                                     <pre><code>
                         {% for i in range(0, hsp.query_to - hsp.query_from, max_len) %}
-Query {{ "%4d"|format(hsp.query_from + i) }}  {{ hsp.qseq[i:i+max_len] }}  {{ "%d"|format([hsp.query_from + i + max_len, hsp.query_to]|min) }}
+Query {{ "%4d"|format(hsp.query_from + i) }}  {{ hsp.qseq[i:i+max_len] }}  {{ "%d"|format([hsp.query_from + i + max_len - 1, hsp.query_to]|min) }}
             {{ hsp.midline[i:i+max_len] }}
-Sbjct {{ "%4d"|format(hsp.hit_from + i) }}  {{ hsp.hseq[i:i+max_len] }}  {{ "%d"|format([hsp.hit_from + i + max_len, hsp.hit_to]|min) }}
+Sbjct {{ "%4d"|format(hsp.hit_from + i) }}  {{ hsp.hseq[i:i+max_len] }}  {{ "%d"|format([hsp.hit_from + i + max_len - 1, hsp.hit_to]|min) }}
                         {% endfor %}
                                     </code></pre>
                             {% endfor %}
