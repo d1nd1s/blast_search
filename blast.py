@@ -40,6 +40,19 @@ class BlastHit:
 
 
 @dataclass
+class FormParameters:
+    max_target_sequences: int
+    program_selection: str
+    tax_id: str
+    tax_id_neg: str
+    short_query: int
+    e_value: int
+    word_size: int
+    gapopen: int
+    gapextend: int
+
+
+@dataclass
 class BlastResult:
     program: str
     db: str
@@ -108,18 +121,28 @@ def _parse_xml(xml_data):
 class BlastRunner:
     def __init__(self,
                  program: str,
-                 db_path: str):
+                 db_path: str,
+                 ):
         self.program = program
         self.db_path = db_path
 
-    def run(self, query_file) -> BlastResult:
-
+    def run(self, query_file, parameters) -> BlastResult:
         cmd = [
             self.program,
             '-query', query_file.name,
             '-db', self.db_path,
-            '-outfmt', '5'
+            '-outfmt', '5',
+            '-max_target_seqs', str(parameters.max_target_sequences),
+            '-task', parameters.program_selection,
+            '-evalue', str(parameters.e_value),
+            '-word_size', str(parameters.word_size),
+            '-gapopen', str(parameters.gapopen),
+            '-gapextend', str(parameters.gapextend)
         ]
+        if parameters.tax_id:
+            cmd.append('-taxids', parameters.tax_id)
+        if parameters.tax_id_neg:
+            cmd.append('-negative_taxids', parameters.tax_id_neg,)
 
         try:
             sp_run = subprocess.run(cmd,
