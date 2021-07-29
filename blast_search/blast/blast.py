@@ -158,7 +158,7 @@ class BlastRunner:
             logging.error('Blast execution error: %s', err.stderr)
             return None
 
-        dtd_path = os.path.join(os.path.dirname(__file__), 'data/blastoutput_mod.dtd')
+        dtd_path = os.path.join(os.path.dirname(__file__), 'blastoutput_mod.dtd')
         dtd = etree.DTD(file=dtd_path)
         tree = etree.XML(sp_run.stdout)
 
