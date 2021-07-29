@@ -9,7 +9,7 @@ from flask.cli import with_appcontext
 from flask_bootstrap import Bootstrap
 
 from blast_search import config
-from .models import db
+from blast_search.models import db
 from .views import search_bp
 
 

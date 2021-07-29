@@ -6,8 +6,8 @@ from tempfile import NamedTemporaryFile
 from flask import Blueprint, current_app, render_template, redirect, request, url_for
 
 from blast_search.blast import blast
+from blast_search.models import db, Request
 from .forms import SearchForm
-from .models import db, Request
 
 
 search_bp = Blueprint('search', __name__, url_prefix='/')
