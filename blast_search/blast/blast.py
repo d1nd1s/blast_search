@@ -43,6 +43,7 @@ class BlastHit:
     hsps: List[HitHSP]
 
 
+@dataclass_json
 @dataclass
 class FormParameters:
     max_target_sequences: int

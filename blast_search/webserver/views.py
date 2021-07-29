@@ -1,12 +1,12 @@
 "Blast search views"
 
-import os
-from tempfile import NamedTemporaryFile
+import requests
 
 from flask import Blueprint, current_app, render_template, redirect, request, url_for
 
 from blast_search.blast import blast
-from blast_search.models import db, Request
+from blast_search.models import BlastType
+from blast_search import request_data
 from .forms import SearchForm
 
 
@@ -33,28 +33,16 @@ def index():
 
 
 def process_blastn(form):
-    program = 'blastn'
-    db_path = current_app.config['BLAST_DB'].blastn[form.search_db.data]
-    return process_blast(form, program, db_path)
+    program = BlastType.BLASTN
+    return process_blast(form, program)
 
 
 def process_blastp(form):
-    program = 'blastp'
-    db_path = current_app.config['BLAST_DB'].blastp[form.search_db.data]
-    return process_blast(form, program, db_path)
+    program = BlastType.BLASTP
+    return process_blast(form, program)
 
 
-def process_blast(form, program, db_path):
-    if form.query_from.data and form.query_to.data:
-        qry_fr = int(form.query_from.data) - 1
-        qry_to = int(form.query_to.data) - 1
-        seq = str(form.sequence.data)[qry_fr:qry_to]
-    else:
-        seq = form.sequence.data
-
-    with NamedTemporaryFile(mode="w+", delete=False) as query_file:
-        query_file.write(seq)
-
+def process_blast(form, program):
     params = blast.FormParameters(
         max_target_sequences=form.max_target_sequences.data,
         program_selection=form.program_selection.data,
@@ -67,28 +55,32 @@ def process_blast(form, program, db_path):
         gapextend=form.gapextend.data
     )
 
-    runner = blast.BlastRunner(program, db_path)
-    result = runner.run(query_file, params)
+    req = request_data.BlastSearchRequest(query=form.sequence.data,
+                                          program=program,
+                                          db_name=form.search_db.data,
+                                          params=params)
 
-    search_req = Request(data=result.to_json())
-    db.session.add(search_req)
-    db.session.commit()
+    url = current_app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_SEARCH_URL
+    resp = requests.post(url, json=req.to_json())
 
-    os.remove(query_file.name)
-
-    if result is None:
+    if not resp.ok:
         return render_template('except.html')
+    
+    search_id = resp.json()["search_id"]
 
-    return redirect(url_for('search.search', req_id=search_req.id))
+    return redirect(url_for('search.search', req_id=search_id))
 
 
 @search_bp.route('/search/<int:req_id>')
 def search(req_id):
-    search_req = Request.query.get(req_id)
-    if search_req is None:
+    url = current_app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_RESULT_URL + f'/{req_id}'
+    resp = requests.get(url)
+
+    if not resp.ok:
         return render_template('search_id_error.html')
 
-    result = blast.BlastResult.from_json(search_req.data)
+    result = blast.BlastResult.from_json(resp.text)
+
     if not result.hits:
         return render_template('nothing_found.html')
 

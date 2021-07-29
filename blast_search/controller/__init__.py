@@ -3,9 +3,11 @@
 import os
 import logging
 
+import click
 from flask import Flask
+from flask.cli import with_appcontext
 
-from blast_search.config import Config
+from blast_search import config
 from blast_search.models import db
 from .views import control_bp
 
@@ -14,13 +16,14 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
 
     if test_config is None:
-        app.config.from_object(Config)
+        app.config.from_object(config.Config)
     else:
         app.config.from_mapping(test_config)
 
     os.makedirs(app.instance_path, exist_ok=True)
 
     db.init_app(app)
+    app.cli.add_command(init_db_command)
 
     logging.basicConfig(level=logging.DEBUG,
                     handlers=[
@@ -28,6 +31,22 @@ def create_app(test_config=None):
                         logging.StreamHandler()
                     ])
 
+    if app.config['BLAST_DB_CONFIG'][0] == '/':
+        blast_db_config = app.config['BLAST_DB_CONFIG']
+    else:
+        blast_db_config = os.path.join(os.path.dirname(config.__file__),
+                                       app.config['BLAST_DB_CONFIG'])
+
+    app.config['BLAST_DB'] = config.get_blast_db_config(blast_db_config)
+
     app.register_blueprint(control_bp)
 
     return app
+
+
+@click.command('init-db')
+@with_appcontext
+def init_db_command():
+    """Clear the existing data and create new tables."""
+    db.create_all()
+    click.echo('Initialized the database.')
