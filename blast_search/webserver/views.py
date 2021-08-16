@@ -65,7 +65,7 @@ def process_blast(form, program):
 
     if not resp.ok:
         return render_template('except.html')
-    
+
     search_id = resp.json()["search_id"]
 
     return redirect(url_for('search.search', req_id=search_id))

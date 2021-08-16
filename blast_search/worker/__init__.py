@@ -2,11 +2,18 @@
 
 import os
 import logging
+import atexit
+import requests
 
 from flask import Flask
 
+from blast_search import request_data
 from blast_search.config import Config
 from .views import worker_bp
+
+
+def on_exit(work_url, work_json):
+    requests.delete(work_url, json=work_json)
 
 
 def create_app(test_config=None):
@@ -26,5 +33,13 @@ def create_app(test_config=None):
                     ])
 
     app.register_blueprint(worker_bp)
+
+    work_url = app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_WORKERS_URL
+    work_json = {'port': app.config['BLAST_WORKER_PORT']}
+    work_resp = requests.post(work_url, json=work_json)
+    if not work_resp.ok:
+        raise ValueError('Cannot connect to controller')
+
+    atexit.register(on_exit, work_url=work_url, work_json=work_json)
 
     return app

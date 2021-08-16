@@ -22,7 +22,9 @@ class Config():
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     BLAST_CONTROLLER_URL = os.getenv('BLAST_CONTROLLER_URL') or 'http://localhost:5010'
+    BLAST_CONTROLLER_URL_BKP = os.getenv('BLAST_CONTROLLER_URL_BKP') or 'http://localhost:5011'
     BLAST_DB_CONFIG = os.getenv('BLAST_DB_CONFIG') or 'data/blast_db.json'
+    BLAST_WORKER_PORT = os.getenv('BLAST_WORKER_PORT') or '5050'
     LOG_FILE = os.getenv('LOG_FILE') or 'log.txt'
 
 

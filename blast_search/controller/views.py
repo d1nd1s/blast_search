@@ -6,7 +6,7 @@ from tempfile import NamedTemporaryFile
 from flask import current_app, jsonify, Blueprint, request
 
 from blast_search.blast import blast
-from blast_search.models import db, Request, BlastType, Status
+from blast_search.models import db, Request, BlastType, Status, Worker, WorkerStatus
 from blast_search import request_data
 
 
@@ -62,10 +62,34 @@ def result(req_id):
 
     return jsonify(blast_result.to_dict())
 
-# @control_bp.route('/worker/new', methods=["POST"])
-# def new_worker():
 
-#     return jsonify({"status": "success"})
+@control_bp.route(request_data.BLAST_WORKERS_URL, methods=["GET", "POST", "DELETE"])
+def workers():
+    if request.method == 'GET':
+        wkrs = Worker.query.all()
+        return jsonify(
+            {"status": "success",
+             "workers": wkrs
+        })
+
+    worker_ip = request.environ['REMOTE_ADDR']
+    worker_port = request.json['port']
+    worker_url = f"http://{worker_ip}:{worker_port}"
+
+    if request.method == 'POST':
+        worker = Worker(status=WorkerStatus.IDLE, url=worker_url)
+        db.session.add(worker)
+        db.session.commit()
+        return jsonify({"status": "success"})
+
+    if request.method == 'DELETE':
+        #TODO: check for compleated tasks
+        worker = Worker.query.filter_by(url=worker_url).first()
+        db.session.delete(worker)
+        db.session.commit()
+        return jsonify({"status": "success"})
+
+
 
 
 # @control_bp.route('/worker/task/<int:task_id>', methods=["POST"])

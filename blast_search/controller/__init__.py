@@ -8,7 +8,7 @@ from flask import Flask
 from flask.cli import with_appcontext
 
 from blast_search import config
-from blast_search.models import db
+from blast_search.models import Worker, db
 from .views import control_bp
 
 
@@ -40,6 +40,10 @@ def create_app(test_config=None):
     app.config['BLAST_DB'] = config.get_blast_db_config(blast_db_config)
 
     app.register_blueprint(control_bp)
+
+    with app.app_context():
+        db.session.query(Worker).delete()
+        db.session.commit()
 
     return app
 
