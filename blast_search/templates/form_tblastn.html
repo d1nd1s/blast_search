@@ -1,0 +1,30 @@
+<form class="form" method="post" role="form">
+    <input type="hidden" name="which-form" value="tblastn"/>
+    <h1>TBLASTN</h1>
+    {{ form_blastn.hidden_tag() }}
+    {{ wtf.form_errors(form_tblastn, hiddens="only") }}
+    {{ wtf.form_field(form_tblastn.sequence)}}
+    {{ wtf.form_field(form_tblastn.query_from) }}
+    {{ wtf.form_field(form_tblastn.query_to) }}
+    {{ wtf.form_field(form_tblastn.search_db) }}
+    <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample3"
+                aria-expanded="false" aria-controls="collapseExample3">
+            Параметры алгоритма
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample3">
+        <div class="card card-body">
+                {{ wtf.form_field(form_tblastn.tax_id) }}
+                {{ wtf.form_field(form_tblastn.tax_id_neg) }}
+                {{ wtf.form_field(form_tblastn.max_target_sequences) }}
+                {{ wtf.form_field(form_tblastn.short_query) }}
+                {{ wtf.form_field(form_tblastn.e_value) }}
+                {{ wtf.form_field(form_tblastn.word_size) }}
+                {{ wtf.form_field(form_tblastn.gapopen) }}
+                {{ wtf.form_field(form_tblastn.gapextend) }}
+                {{ wtf.form_field(form_tblastn.matrix) }}
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>

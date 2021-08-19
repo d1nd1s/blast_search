@@ -1,0 +1,31 @@
+<form class="form" method="post" role="form">
+    <input type="hidden" name="which-form" value="blastx"/>
+    <h1>BLASTX</h1>
+    {{ form_blastn.hidden_tag() }}
+    {{ wtf.form_errors(form_blastx, hiddens="only") }}
+    {{ wtf.form_field(form_blastx.sequence) }}
+    {{ wtf.form_field(form_blastx.query_from) }}
+    {{ wtf.form_field(form_blastx.query_to) }}
+    {{ wtf.form_field(form_blastx.query_gencode) }}
+    {{ wtf.form_field(form_blastx.search_db) }}
+    <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample2"
+                aria-expanded="false" aria-controls="collapseExample2">
+            Параметры алгоритма
+        </button>
+    </p>
+    <div class="collapse" id="collapseExample2">
+        <div class="card card-body">
+            {{ wtf.form_field(form_blastx.tax_id) }}
+            {{ wtf.form_field(form_blastx.tax_id_neg) }}
+            {{ wtf.form_field(form_blastx.max_target_sequences) }}
+            {{ wtf.form_field(form_blastx.short_query) }}
+            {{ wtf.form_field(form_blastx.e_value) }}
+            {{ wtf.form_field(form_blastx.word_size) }}
+            {{ wtf.form_field(form_blastx.gapopen) }}
+            {{ wtf.form_field(form_blastx.gapextend) }}
+            {{ wtf.form_field(form_blastx.matrix) }}
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>

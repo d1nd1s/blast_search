@@ -1,0 +1,28 @@
+<form class="form" method="post" role="form">
+    <input type="hidden" name="which-form" value="tblastx"/>
+    <h1>TBLASTX</h1>
+    {{ form_blastn.hidden_tag() }}
+    {{ wtf.form_errors(form_tblastx, hiddens="only") }}
+    {{ wtf.form_field(form_tblastx.sequence)}}
+    {{ wtf.form_field(form_tblastx.query_from) }}
+    {{ wtf.form_field(form_tblastx.query_to) }}
+    {{ wtf.form_field(form_tblastx.search_db) }}
+    <p>
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample4"
+                aria-expanded="false" aria-controls="collapseExample4">
+            Параметры алгоритма
+        </button>
+    </p>
+    <div class="collapse" id="collapse4">
+        <div class="card card-body">
+                {{ wtf.form_field(form_tblastx.tax_id) }}
+                {{ wtf.form_field(form_tblastx.tax_id_neg) }}
+                {{ wtf.form_field(form_tblastx.max_target_sequences) }}
+                {{ wtf.form_field(form_tblastx.short_query) }}
+                {{ wtf.form_field(form_tblastx.e_value) }}
+                {{ wtf.form_field(form_tblastx.word_size) }}
+                {{ wtf.form_field(form_tblastx.matrix) }}
+        </div>
+    </div>
+    <button class="btn btn-primary" type="submit">Search</button>
+</form>

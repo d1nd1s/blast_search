@@ -44,7 +44,7 @@ class BlastHit:
 
 
 @dataclass
-class FormParameters:
+class BlastParameters:
     max_target_sequences: int
     program_selection: str
     tax_id: str
@@ -52,8 +52,39 @@ class FormParameters:
     short_query: int
     e_value: int
     word_size: int
+
+
+@dataclass
+class BlastnParameters(BlastParameters):
     gapopen: int
     gapextend: int
+
+
+@dataclass
+class BlastpParameters(BlastParameters):
+    gapopen: int
+    gapextend: int
+    matrix: str
+
+
+@dataclass
+class BlastxParameters(BlastParameters):
+    gapopen: int
+    gapextend: int
+    matrix: str
+    query_gencode: int
+
+
+@dataclass
+class TblastNParameters(BlastParameters):
+    gapopen: int
+    gapextend: int
+    matrix: str
+
+
+@dataclass
+class TblastXParameters(BlastParameters):
+    matrix: str
 
 
 @dataclass_json
@@ -138,16 +169,44 @@ class BlastRunner:
             '-db', self.db_path,
             '-outfmt', '5',
             '-max_target_seqs', str(parameters.max_target_sequences),
-            '-task', parameters.program_selection,
             '-evalue', str(parameters.e_value),
             '-word_size', str(parameters.word_size),
-            '-gapopen', str(parameters.gapopen),
-            '-gapextend', str(parameters.gapextend)
         ]
+
         if parameters.tax_id:
-            cmd.append('-taxids', parameters.tax_id)
+            cmd.extend(['-taxids', parameters.tax_id])
         if parameters.tax_id_neg:
-            cmd.append('-negative_taxids', parameters.tax_id_neg,)
+            cmd.append(['-negative_taxids', parameters.tax_id_neg])
+
+        if self.program == 'blastn':
+            cmd.extend([
+                '-task', parameters.program_selection,
+                '-gapopen', str(parameters.gapopen),
+                '-gapextend', str(parameters.gapextend)
+            ])
+        elif self.program == 'blastp':
+            cmd.extend([
+                '-task', parameters.program_selection,
+                '-gapopen', str(parameters.gapopen),
+                '-gapextend', str(parameters.gapextend),
+                '-matrix', str(parameters.matrix)
+            ])
+        elif self.program == 'blastx':
+            cmd.extend([
+                '-gapopen', str(parameters.gapopen),
+                '-gapextend', str(parameters.gapextend),
+                '-matrix', str(parameters.matrix)
+            ])
+        elif self.program == 'tblastn':
+            cmd.extend([
+                '-gapopen', str(parameters.gapopen),
+                '-gapextend', str(parameters.gapextend),
+                '-matrix', str(parameters.matrix),
+            ])
+        else:
+            cmd.extend([
+                '-matrix', str(parameters.matrix)
+            ])
 
         try:
             sp_run = subprocess.run(cmd,

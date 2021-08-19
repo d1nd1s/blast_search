@@ -6,6 +6,9 @@
     <ul class="nav nav-tabs nav-justified">
       <li class="active"><a data-toggle="tab" href="#blastn">Blastn</a></li>
       <li><a data-toggle="tab" href="#blastp">Blastp</a></li>
+      <li><a data-toggle="tab" href="#blastx">Blastx</a></li>
+      <li><a data-toggle="tab" href="#tblastn">TBlastn</a></li>
+      <li><a data-toggle="tab" href="#tblastx">TBlastx</a></li>
     </ul>
     <div class="tab-content">
         <div class="tab-pane active"  id="blastn">
@@ -16,6 +19,21 @@
         <div class="tab-pane"  id="blastp">
             <div class="container">
                 {% include 'form_blastp.html' %}
+            </div>
+        </div>
+        <div class="tab-pane"  id="blastx">
+            <div class="container">
+                {% include 'form_blastx.html' %}
+            </div>
+        </div>
+        <div class="tab-pane"  id="tblastn">
+            <div class="container">
+                {% include 'form_tblastn.html' %}
+            </div>
+        </div>
+        <div class="tab-pane"  id="tblastx">
+            <div class="container">
+                {% include 'form_tblastx.html' %}
             </div>
         </div>
     </div>
