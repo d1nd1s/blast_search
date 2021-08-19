@@ -36,10 +36,15 @@ def create_app(test_config=None):
 
     work_url = app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_WORKERS_URL
     work_json = {'port': app.config['BLAST_WORKER_PORT']}
-    work_resp = requests.post(work_url, json=work_json)
-    if not work_resp.ok:
-        raise ValueError('Cannot connect to controller')
 
-    atexit.register(on_exit, work_url=work_url, work_json=work_json)
+    try:
+        work_resp = requests.post(work_url, json=work_json)
+        if not work_resp.ok:
+            raise ValueError('Error connecting to controller')
+
+        atexit.register(on_exit, work_url=work_url, work_json=work_json)
+    except requests.ConnectionError as exc:
+        raise ValueError('Cannot connect to controller') from exc
+
 
     return app

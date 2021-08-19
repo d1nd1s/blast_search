@@ -73,7 +73,7 @@ def process_blast(form, program):
 
 @search_bp.route('/search/<int:req_id>')
 def search(req_id):
-    url = current_app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_RESULT_URL + f'/{req_id}'
+    url = current_app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_SEARCH_URL + f'/{req_id}'
     resp = requests.get(url)
 
     if not resp.ok:

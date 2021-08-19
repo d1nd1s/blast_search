@@ -52,8 +52,8 @@ def new_search():
     return jsonify({"search_id": search_id})
 
 
-@control_bp.route(request_data.BLAST_RESULT_URL + '/<int:req_id>')
-def result(req_id):
+@control_bp.route(request_data.BLAST_SEARCH_URL + '/<int:req_id>')
+def search_result(req_id):
     search_req = Request.query.get(req_id)
     if search_req is None:
         return jsonify({"msg": "search id did not found"}), 404
@@ -63,7 +63,9 @@ def result(req_id):
     return jsonify(blast_result.to_dict())
 
 
-@control_bp.route(request_data.BLAST_WORKERS_URL, methods=["GET", "POST", "DELETE"])
+workers_bp = Blueprint('workers', __name__, url_prefix=request_data.BLAST_WORKERS_URL)
+
+@workers_bp.route('', methods=["GET", "POST", "DELETE"])
 def workers():
     if request.method == 'GET':
         wkrs = Worker.query.all()
@@ -77,14 +79,22 @@ def workers():
     worker_url = f"http://{worker_ip}:{worker_port}"
 
     if request.method == 'POST':
+        if Worker.query.filter_by(url=worker_url).first() is not None:
+            return jsonify({"status": "warning",
+                            "msg": "worker is already in database"})
+
         worker = Worker(status=WorkerStatus.IDLE, url=worker_url)
         db.session.add(worker)
         db.session.commit()
         return jsonify({"status": "success"})
 
     if request.method == 'DELETE':
-        #TODO: check for compleated tasks
+        #TODO: check for completed tasks
         worker = Worker.query.filter_by(url=worker_url).first()
+
+        if worker is None:
+            return jsonify({"status": "error", "msg": "worker is missing form database"}), 404
+
         db.session.delete(worker)
         db.session.commit()
         return jsonify({"status": "success"})

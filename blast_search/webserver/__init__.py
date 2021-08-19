@@ -34,7 +34,11 @@ def create_app(test_config=None):
     app.register_blueprint(search_bp)
 
     db_url = app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_DB_URL
-    db_resp = requests.get(db_url)
-    app.config['BLAST_DB'] = config.BlastDBConfig.from_json(db_resp.text)
+
+    try:
+        db_resp = requests.get(db_url)
+        app.config['BLAST_DB'] = config.BlastDBConfig.from_json(db_resp.text)
+    except requests.ConnectionError as exc:
+        raise ValueError('Cannot connect to controller') from exc
 
     return app

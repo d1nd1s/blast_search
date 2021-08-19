@@ -8,8 +8,7 @@ from blast_search.blast.blast import FormParameters
 
 
 BLAST_DB_URL = '/db'
-BLAST_SEARCH_URL = '/new_blast'
-BLAST_RESULT_URL = '/result'
+BLAST_SEARCH_URL = '/blast'
 BLAST_WORKERS_URL = '/workers'
 
 @dataclass_json

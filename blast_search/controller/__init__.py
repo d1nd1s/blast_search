@@ -2,6 +2,7 @@
 
 import os
 import logging
+import requests
 
 import click
 from flask import Flask
@@ -9,7 +10,7 @@ from flask.cli import with_appcontext
 
 from blast_search import config
 from blast_search.models import Worker, db
-from .views import control_bp
+from .views import control_bp, workers_bp
 
 
 def create_app(test_config=None):
@@ -40,9 +41,14 @@ def create_app(test_config=None):
     app.config['BLAST_DB'] = config.get_blast_db_config(blast_db_config)
 
     app.register_blueprint(control_bp)
+    app.register_blueprint(workers_bp)
 
     with app.app_context():
-        db.session.query(Worker).delete()
+        for worker in db.session.query(Worker).all():
+            try:
+                requests.get(worker.url + '/ping')
+            except requests.ConnectionError:
+                db.session.delete(worker)
         db.session.commit()
 
     return app
