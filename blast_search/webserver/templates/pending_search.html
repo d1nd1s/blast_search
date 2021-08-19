@@ -1,0 +1,12 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}BLAST search request{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Результаты поиска еще не готовы</h1>
+        <div>Database: <strong>{{ request['db_name'] }}</strong></div>
+        <div>Program: <strong>{{ request['blast_type'] }}</strong></div>
+        <div>Created: <strong>{{ request['created_date'] }}</strong></div>
+        <div>Status: <strong>{{ request['status'] }}</strong></div>
+    </div>
+{% endblock %}

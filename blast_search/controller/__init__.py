@@ -43,14 +43,6 @@ def create_app(test_config=None):
     app.register_blueprint(control_bp)
     app.register_blueprint(workers_bp)
 
-    with app.app_context():
-        for worker in db.session.query(Worker).all():
-            try:
-                requests.get(worker.url + '/ping')
-            except requests.ConnectionError:
-                db.session.delete(worker)
-        db.session.commit()
-
     return app
 
 

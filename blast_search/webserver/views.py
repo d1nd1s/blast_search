@@ -5,7 +5,7 @@ import requests
 from flask import Blueprint, current_app, render_template, redirect, request, url_for
 
 from blast_search.blast import blast
-from blast_search.models import BlastType
+from blast_search.models import BlastType, Status
 from blast_search import request_data
 from .forms import SearchForm
 
@@ -33,16 +33,16 @@ def index():
 
 
 def process_blastn(form):
-    program = BlastType.BLASTN
-    return process_blast(form, program)
+    blast_type = BlastType.BLASTN
+    return process_blast(form, blast_type)
 
 
 def process_blastp(form):
-    program = BlastType.BLASTP
-    return process_blast(form, program)
+    blast_type = BlastType.BLASTP
+    return process_blast(form, blast_type)
 
 
-def process_blast(form, program):
+def process_blast(form, blast_type):
     params = blast.FormParameters(
         max_target_sequences=form.max_target_sequences.data,
         program_selection=form.program_selection.data,
@@ -55,8 +55,8 @@ def process_blast(form, program):
         gapextend=form.gapextend.data
     )
 
-    req = request_data.BlastSearchRequest(query=form.sequence.data,
-                                          program=program,
+    req = request_data.BlastSearchRequest(blast_query=form.sequence.data,
+                                          blast_type=blast_type,
                                           db_name=form.search_db.data,
                                           params=params)
 
@@ -74,14 +74,24 @@ def process_blast(form, program):
 @search_bp.route('/search/<int:req_id>')
 def search(req_id):
     url = current_app.config['BLAST_CONTROLLER_URL'] + request_data.BLAST_SEARCH_URL + f'/{req_id}'
-    resp = requests.get(url)
+    
+    try:
+        resp = requests.get(url)
 
-    if not resp.ok:
-        return render_template('search_id_error.html')
+        if not resp.ok:
+            return render_template('search_id_error.html')
+    except:
+        return render_template('internal_error.html')
 
-    result = blast.BlastResult.from_json(resp.text)
+    search_req = resp.json()
+    search_req['status'] = Status(search_req['status'])
 
-    if not result.hits:
-        return render_template('nothing_found.html')
+    if search_req['status'] == Status.SUCCESS:
+        blast_result = search_req.result
 
-    return render_template('result.html', result=result, max_len=60)
+        if not blast_result.hits:
+            return render_template('nothing_found.html')
+
+        return render_template('result.html', result=blast_result, max_len=60)
+    
+    return render_template('pending_search.html', request=search_req)

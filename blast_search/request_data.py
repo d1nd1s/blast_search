@@ -15,7 +15,7 @@ BLAST_WORKERS_URL = '/workers'
 @dataclass
 class BlastSearchRequest:
     "Request for new blast search"
-    query: str
-    program: BlastType
+    blast_query: str
+    blast_type: BlastType
     db_name: str
     params: FormParameters
