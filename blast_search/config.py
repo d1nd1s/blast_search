@@ -9,6 +9,7 @@ import os
 import json
 from dataclasses import dataclass
 
+
 class Config():
     "Flask configuration"
     DEBUG = True
@@ -25,9 +26,12 @@ class Config():
 
 @dataclass
 class BlastDBConfig():
-    "Blast data configuration"
+    """Blast data configuration"""
     blastn: dict
     blastp: dict
+    blastx: dict
+    tblastn: dict
+    tblastx: dict
 
 
 def get_blast_db_config(config_file: str) -> BlastDBConfig:
@@ -38,8 +42,11 @@ def get_blast_db_config(config_file: str) -> BlastDBConfig:
         data = json.load(json_file)
 
         blast_db_config = BlastDBConfig(
-            blastn={e["name"]:e["path"] for e in data["blastn"]},
-            blastp={e["name"]:e["path"] for e in data["blastp"]},
+            blastn={e["name"]: e["path"] for e in data["blastn"]},
+            blastp={e["name"]: e["path"] for e in data["blastp"]},
+            blastx={e["name"]: e["path"] for e in data["blastx"]},
+            tblastn={e["name"]: e["path"] for e in data["tblastn"]},
+            tblastx={e["name"]: e["path"] for e in data["tblastx"]},
         )
 
     return blast_db_config

@@ -2,13 +2,31 @@
   "blastn": [
     {
       "name": "Тестовая база нуклеотидов",
-      "path": "/home/serge/workspace/blast_data/test_db_nucl/test.fa"
+      "path": "/home/dina/PycharmProjects/blast_search/db/a.fa"
     }
   ],
   "blastp": [
     {
       "name": "Тестовая база белков",
-      "path": "/home/serge/workspace/blast_data/test_db_prot/test.fa"
+      "path": "dbp/p.fasta"
+    }
+  ],
+  "blastx": [
+    {
+      "name": "Тестовая база аминокислот",
+      "path": "dbp/p.fasta"
+    }
+  ],
+  "tblastn": [
+    {
+      "name": "Тестовая база аминокислот",
+      "path": "dbp/p.fasta"
+    }
+  ],
+  "tblastx": [
+    {
+      "name": "Тестовая база аминокислот",
+      "path": "dbp/p.fasta"
     }
   ]
 }
